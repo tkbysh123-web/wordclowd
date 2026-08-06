@@ -131,7 +131,26 @@ document.getElementById("roomInput").value=room;
 
 document.getElementById("roomLabel").textContent=
 "ルーム: "+room;
+const viewOnly =
+new URLSearchParams(location.search)
+.get("view");
 
+if(viewOnly){
+
+const header =
+document.querySelector("header");
+
+const controls =
+document.querySelector(".controls");
+
+if(header) header.style.display="none";
+if(controls) controls.style.display="none";
+
+document.getElementById("cloud").style.minHeight=
+"100vh";
+
+}
+  
 const roomDoc =
 doc(db,"rooms",room);
 
@@ -149,12 +168,12 @@ location.href=
 
 window.sendWord=async function(){
 
-const word=
+const text=
 document.getElementById("wordInput")
 .value
 .trim();
 
-if(!word)return;
+if(!text)return;
 
 const snap=await getDoc(roomDoc);
 
@@ -163,7 +182,28 @@ let data={};
 if(snap.exists()){
 data=snap.data();
 }
-  data[word]=(data[word]||0)+1;
+
+const words=text
+.replace(/[。、.,!?！？「」]/g," ")
+.split(/\s+/)
+.filter(w=>w.length>=2);
+
+words.forEach(word=>{
+
+data[word]=(data[word]||0)+1;
+
+});
+
+const words=text
+.replace(/[。、.,!?！？」「"]/g," ")
+.split(/\s+/)
+.filter(w=>w.length>=2);
+
+words.forEach(word=>{
+
+data[word]=(data[word]||0)+1;
+
+});
 
 await setDoc(roomDoc,data);
 
