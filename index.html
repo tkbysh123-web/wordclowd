@@ -2,10 +2,250 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>WordCloudテスト</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>授業用WordCloud</title>
+
+<style>
+body{
+margin:0;
+font-family:sans-serif;
+background:#f4f6fa;
+}
+
+header{
+background:#1976d2;
+color:white;
+padding:15px;
+text-align:center;
+}
+
+.controls{
+padding:15px;
+display:flex;
+gap:10px;
+justify-content:center;
+flex-wrap:wrap;
+background:white;
+}
+
+input{
+padding:10px;
+font-size:16px;
+}
+
+button{
+padding:10px 16px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.send{
+background:#1976d2;
+color:white;
+}
+
+.reset{
+background:#d32f2f;
+color:white;
+}
+
+#cloud{
+padding:20px;
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+align-items:center;
+min-height:450px;
+}
+
+.word{
+margin:8px;
+font-weight:bold;
+transition:.3s;
+}
+</style>
+
 </head>
 <body>
-<h1>公開成功！</h1>
-<p>GitHub Pagesが動いています。</p>
+
+<header>
+<h1>授業用 Word Cloud</h1>
+<div id="roomLabel"></div>
+</header>
+
+<div class="controls">
+
+<input id="roomInput" placeholder="ルーム名" value="class">
+
+<button onclick="changeRoom()">
+ルーム変更
+</button>
+
+<input id="wordInput" placeholder="言葉を入力">
+
+<button class="send" onclick="sendWord()">
+投稿
+</button>
+
+<button class="reset" onclick="resetRoom()">
+リセット
+</button>
+
+</div>
+
+<div id="cloud"></div>
+
+<script type="module">
+
+import {
+initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getFirestore,
+doc,
+setDoc,
+getDoc,
+onSnapshot,
+deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCitgTEKbiiTnYAgp7fGN4Acn4inyz5yU8",
+authDomain: "wordcloud-e97b1.firebaseapp.com",
+projectId: "wordcloud-e97b1",
+storageBucket: "wordcloud-e97b1.firebasestorage.app",
+messagingSenderId: "1022337309744",
+appId: "1:1022337309744:web:169ae6cb7986ebd06f61f5"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let room =
+new URLSearchParams(location.search).get("room")
+|| "class";
+
+document.getElementById("roomInput").value=room;
+
+document.getElementById("roomLabel").textContent=
+"ルーム: "+room;
+
+const roomDoc =
+doc(db,"rooms",room);
+
+window.changeRoom=function(){
+
+const r=
+document.getElementById("roomInput").value.trim();
+
+if(!r)return;
+
+location.href=
+"?room="+encodeURIComponent(r);
+
+};
+
+window.sendWord=async function(){
+
+const word=
+document.getElementById("wordInput")
+.value
+.trim();
+
+if(!word)return;
+
+const snap=await getDoc(roomDoc);
+
+let data={};
+
+if(snap.exists()){
+data=snap.data();
+}
+  data[word]=(data[word]||0)+1;
+
+await setDoc(roomDoc,data);
+
+document.getElementById("wordInput").value="";
+
+};
+
+window.resetRoom=async function(){
+
+if(!confirm("リセットしますか？")) return;
+
+await deleteDoc(roomDoc);
+
+};
+
+function color(word){
+
+let hash=0;
+
+for(let i=0;i<word.length;i++){
+hash+=word.charCodeAt(i);
+}
+
+return `hsl(${hash%360},70%,45%)`;
+
+}
+
+function render(data){
+
+const cloud=
+document.getElementById("cloud");
+
+cloud.innerHTML="";
+
+if(!data)return;
+
+const entries=
+Object.entries(data);
+
+if(entries.length===0)return;
+
+const max=
+Math.max(...entries.map(e=>e[1]));
+
+entries
+.sort((a,b)=>b[1]-a[1])
+.forEach(([word,count])=>{
+
+const span=
+document.createElement("span");
+
+const size=
+24+(count/max)*70;
+
+span.className="word";
+
+span.style.fontSize=
+size+"px";
+
+span.style.color=
+color(word);
+
+span.textContent=
+word+" ("+count+")";
+
+cloud.appendChild(span);
+
+});
+
+}
+
+onSnapshot(roomDoc,snapshot=>{
+
+if(snapshot.exists()){
+render(snapshot.data());
+}else{
+document.getElementById("cloud").innerHTML="";
+}
+
+});
+
+</script>
+
 </body>
 </html>
