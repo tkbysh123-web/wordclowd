@@ -124,8 +124,6 @@ new URLSearchParams(location.search).get("room")
 
 document.getElementById("roomInput").value=room;
 
-document.getElementById("roomLabel").textContent=
-"ルーム: "+room;
 const viewOnly =
 new URLSearchParams(location.search)
 .get("view");
@@ -185,7 +183,7 @@ data=snap.data();
 }
 
 const words=text
-.replace(/[。、.,!?！？「」]/g," ")
+.replace(/[。、.,!?！？」「"]/g," ")
 .split(/\s+/)
 .filter(w=>w.length>=2);
 
@@ -194,9 +192,7 @@ words.forEach(word=>{
 data[word]=(data[word]||0)+1;
 
 });
-
-const words=text
-.replace(/[。、.,!?！？」「"]/g," ")
+  
 .split(/\s+/)
 .filter(w=>w.length>=2);
 
