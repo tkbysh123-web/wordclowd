@@ -85,7 +85,6 @@ transition:.3s;
 
 <div id="cloud"></div>
 
-https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dist/kuromoji.js"></script>
 
 <script type="module">
 
@@ -114,24 +113,7 @@ appId: "1:1022337309744:web:169ae6cb7986ebd06f61f5"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let tokenizer = null;
 
-kuromoji.builder({
-  dicPath:
-  "https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict/"
-})
-.build(function(err, t){
-
-  if(err){
-    console.error(err);
-    return;
-  }
-
-  tokenizer = t;
-
-  console.log("kuromoji ready");
-
-});
   
 let room =
 new URLSearchParams(location.search).get("room")
@@ -204,42 +186,16 @@ return;
 
 }
 
-const stopWords = [
+const words=text
+.replace(/[。、.,!?！？「」]/g," ")
+.split(/\s+/)
+.filter(w=>w.length>=2);
 
-"今日",
-"今回",
-"授業",
-"学習",
-"自分",
-"みんな",
+words.forEach(word=>{
 
-"こと",
-"もの",
-"ため",
-"よう",
+data[word]=(data[word]||0)+1;
 
-"です",
-"でした",
-"ます",
-"ました",
-
-"する",
-"なる",
-"ある",
-"いる",
-
-"これ",
-"それ",
-"あれ"
-
-];
-console.log("tokenizer=", tokenizer);
-alert("投稿ボタンは押されています");
-  
-const tokens =
-tokenizer.tokenize(text);
-
-const words = tokens
+});
 
 .filter(token =>
 
