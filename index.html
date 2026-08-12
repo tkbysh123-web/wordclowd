@@ -69,11 +69,6 @@ transition:.3s;
 </head>
 <body>
 
-<header>
-<h1>授業用 Word Cloud</h1>
-<div id="roomLabel"></div>
-</header>
-
 <div class="controls">
 
 <input id="roomInput" placeholder="ルーム名" value="class">
@@ -143,11 +138,17 @@ document.querySelector("header");
 const controls =
 document.querySelector(".controls");
 
-if(header) header.style.display="none";
-if(controls) controls.style.display="none";
+if(header) header.remove();
 
-document.getElementById("cloud").style.minHeight=
-"100vh";
+if(controls) controls.remove();
+
+document.body.style.background="#ffffff";
+
+const cloud =
+document.getElementById("cloud");
+
+cloud.style.minHeight="100vh";
+cloud.style.padding="40px";
 
 }
   
@@ -256,7 +257,7 @@ const span=
 document.createElement("span");
 
 const size=
-24+(count/max)*70;
+60+(count/max)*180;
 
 span.className="word";
 
