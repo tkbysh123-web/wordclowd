@@ -113,7 +113,6 @@ appId: "1:1022337309744:web:169ae6cb7986ebd06f61f5"
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 let tokenizer = null;
 
 kuromoji.builder({
@@ -197,14 +196,77 @@ if(snap.exists()){
 data=snap.data();
 }
 
-const words=text
-.replace(/[。、.,!?！？「」]/g," ")
-.split(/\s+/)
-.filter(w=>w.length>=2);
+if(!tokenizer){
 
-words.forEach(word=>{
+alert("辞書を読み込み中です");
+return;
 
-data[word]=(data[word]||0)+1;
+}
+
+const stopWords = [
+
+"今日",
+"今回",
+"授業",
+"学習",
+"自分",
+"みんな",
+
+"こと",
+"もの",
+"ため",
+"よう",
+
+"です",
+"でした",
+"ます",
+"ました",
+
+"する",
+"なる",
+"ある",
+"いる",
+
+"これ",
+"それ",
+"あれ"
+
+];
+
+const tokens =
+tokenizer.tokenize(text);
+
+const words = tokens
+
+.filter(token =>
+
+token.pos === "名詞"
+
+)
+
+.map(token =>
+
+token.basic_form === "*"
+? token.surface_form
+: token.basic_form
+
+)
+
+.filter(word =>
+
+word.length >= 2
+
+)
+
+.filter(word =>
+
+!stopWords.includes(word)
+
+);
+
+words.forEach(word => {
+
+data[word] = (data[word] || 0) + 1;
 
 });
 
