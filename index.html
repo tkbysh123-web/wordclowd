@@ -85,6 +85,8 @@ transition:.3s;
 
 <div id="cloud"></div>
 
+https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dist/kuromoji.js
+  
 <script type="module">
 
 import {
@@ -112,6 +114,25 @@ appId: "1:1022337309744:web:169ae6cb7986ebd06f61f5"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+let tokenizer = null;
+
+kuromoji.builder({
+  dicPath:
+  "https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict/"
+})
+.build(function(err, t){
+
+  if(err){
+    console.error(err);
+    return;
+  }
+
+  tokenizer = t;
+
+  console.log("kuromoji ready");
+
+});
+  
 let room =
 new URLSearchParams(location.search).get("room")
 || "class";
