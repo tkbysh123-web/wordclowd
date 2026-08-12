@@ -267,9 +267,14 @@ word.length >= 2
 
 );
 
-words.forEach(word => {
+const words=text
+.replace(/[。、.,!?！？「」]/g," ")
+.split(/\s+/)
+.filter(w=>w.length>=2);
 
-data[word] = (data[word] || 0) + 1;
+words.forEach(word=>{
+
+data[word]=(data[word]||0)+1;
 
 });
 
