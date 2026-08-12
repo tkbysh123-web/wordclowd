@@ -12,12 +12,6 @@ font-family:sans-serif;
 background:#f4f6fa;
 }
 
-header{
-background:#1976d2;
-color:white;
-padding:15px;
-text-align:center;
-}
 
 .controls{
 padding:15px;
@@ -192,15 +186,7 @@ words.forEach(word=>{
 data[word]=(data[word]||0)+1;
 
 });
-  
-.split(/\s+/)
-.filter(w=>w.length>=2);
 
-words.forEach(word=>{
-
-data[word]=(data[word]||0)+1;
-
-});
 
 await setDoc(roomDoc,data);
 
